@@ -121,18 +121,18 @@ for epoch in range(epochs):
         y_pred = attack_model(x1, x2, m1, m2)
 
         # Compute loss
-        loss = -1*torch.mean(y_pred)
+        loss = -1*torch.sum(y_pred)
 
         # Zero gradients, backward pass, update weights
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        print("running avg: ", (-1*loss))
+        print("running avg: ", (-1*loss/bs))
 
     # Validation
     attack_model.eval()
     y_val_pred = attack_model(X1_val, X2_val, M1_val, M2_val)
-    avg = torch.mean(y_val_pred)
+    avg = torch.sum(y_val_pred)/validation_size
     print("Validation Avg: ", avg)
 
 # Save the trained model
