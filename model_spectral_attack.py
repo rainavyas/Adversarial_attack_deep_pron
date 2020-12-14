@@ -1,6 +1,6 @@
 import torch
 import torch_dct as dct
-from models import FCC
+from model_deep_pron_noI import Deep_Pron
 
 class Spectral_attack(torch.nn.Module):
     def __init__(self, spectral_dim, mfcc_dim, trained_model_path, init_root):
