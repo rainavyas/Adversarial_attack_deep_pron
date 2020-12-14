@@ -108,7 +108,7 @@ else:
 
 print("Initialised model")
 
-optimizer = torch.optim.SGD(deep_model.parameters(), lr=lr, momentum = 0.9, nesterov=True)
+optimizer = torch.optim.SGD(attack_model.parameters(), lr=lr, momentum = 0.9, nesterov=True)
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size = 1, gamma = sch)
 
 for epoch in range(epochs):
