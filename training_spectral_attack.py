@@ -27,6 +27,7 @@ def clip_params(model, barrier_val):
 commandLineParser = argparse.ArgumentParser()
 commandLineParser.add_argument('PKL', type=str, help='Specify input pkl file')
 commandLineParser.add_argument('OUT', type=str, help='Specify output pt file')
+commandLineParser.add_argument('MODEL_PATH', type=str, help='Specify trained model to attack path')
 commandLineParser.add_argument('--e', default=1.0, type=float, help='Specify constraint on size of attack')
 commandLineParser.add_argument('--N', default=993, type=int, help='Specify number of speakers')
 commandLineParser.add_argument('--F', default=100, type=int, help='Specify maximum number of frames in phone instance')
@@ -35,6 +36,7 @@ commandLineParser.add_argument('--checkpoint', default=None, type=str, help='Spe
 args = commandLineParser.parse_args()
 pkl_file = args.PKL
 out_file = args.OUT
+model_path = args.MODEL_PATH
 e = args.e
 N = args.N
 F = args.F
@@ -100,7 +102,7 @@ train_dl = DataLoader(train_ds, batch_size = bs, shuffle = True)
 
 # Initialise deep pron model to be trained
 if checkpoint == None:
-    attack_model = Spectral_attack()
+    attack_model = Spectral_attack(spectral_dim, mfcc_dim, model_path, init_root)
 else:
     deep_model = torch.load(checkpoint)
 

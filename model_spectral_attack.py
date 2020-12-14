@@ -5,7 +5,7 @@ from model_deep_pron_noI import Deep_Pron
 class Spectral_attack(torch.nn.Module):
     def __init__(self, spectral_dim, mfcc_dim, trained_model_path, init_root):
 
-        super(Spectral_attack_by_frame, self).__init__()
+        super(Spectral_attack, self).__init__()
 
         self.trained_model_path = trained_model_path
 
