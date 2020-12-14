@@ -64,7 +64,6 @@ class Spectral_attack(torch.nn.Module):
 
         # Pass through trained model
         trained_model = torch.load(self.trained_model_path)
-        trained_model.to(self.device)
         trained_model.eval()
         y = trained_model(p_vects_masked, q_vects_masked, p_frames_mask, q_frames_mask)
 
