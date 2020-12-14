@@ -2,6 +2,8 @@
 Attack a deep pronunciation system
 
 # Requirements
-###python3.6 or above
-###pip install torch torchvision
-###pip install numpy
+
+### python3.6 or above
+### pip install torch torchvision
+### pip install numpy
+### pip install torch_dct
