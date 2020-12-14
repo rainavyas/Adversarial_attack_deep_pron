@@ -29,7 +29,7 @@ class Spectral_attack(torch.nn.Module):
 
         # Need to add spectral noise
         # Pad to spectral dimension
-        padding = torch.zeros(p_vects.size(0), p_vects.size(1), p_vects.size(2), self.spectral_dim - self.mfcc_dim).to(self.device)
+        padding = torch.zeros(p_vects.size(0), p_vects.size(1), p_vects.size(2), self.spectral_dim - self.mfcc_dim)
         padded_p_vects = torch.cat((p_vects, padding), 3)
         padded_q_vects = torch.cat((q_vects, padding), 3)
 
