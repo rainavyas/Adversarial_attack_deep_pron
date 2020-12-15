@@ -8,6 +8,7 @@ import os
 import argparse
 from pkl2pqvects import get_vects, get_phones
 from model_spectral_attack import Spectral_attack
+import math
 
 def clip_params(model, barrier_val):
     old_params = {}
@@ -91,8 +92,8 @@ torch.manual_seed(seed)
 spectral_dim = 24
 mfcc_dim = 13
 
-init_root = torch.FloatTensor([-3]*spectral_dim)
-barriers = torch.FloatTensor([e]*spectral_dim)
+#init_root = torch.FloatTensor([5]*spectral_dim)
+init_root = torch.randn(spectral_dim)
 
 # Store all training dataset in a single wrapped tensor
 train_ds = TensorDataset(X1_train, X2_train, M1_train, M2_train)
@@ -129,11 +130,24 @@ for epoch in range(epochs):
         optimizer.step()
         print("running avg: ", (-1*loss/bs))
 
+        # Keep weights below barrier
+        clip_params(attack_model, e)
+
     # Validation
     attack_model.eval()
     y_val_pred = attack_model(X1_val, X2_val, M1_val, M2_val)
+    y_val_pred[y_val_pred>6.0]=6.0
+    y_val_pred[y_val_pred<0.0]=0.0
     avg = torch.sum(y_val_pred)/validation_size
     print("Validation Avg: ", avg)
+
+    old_params = {}
+    for name, params in attack_model.named_parameters():
+        old_params[name] = params.clone()
+
+    for i, param in enumerate(old_params['noise_root']):
+        c = math.exp(param)
+        print("Channel:", i, " ", c)
 
 # Save the trained model
 torch.save(attack_model, out_file)
