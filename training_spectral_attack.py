@@ -74,7 +74,7 @@ y = torch.FloatTensor(y)
 
 
 # Split into training and validation sets
-validation_size = 50
+validation_size = 0
 X1_train = X1[validation_size:]
 X1_val = X1[:validation_size]
 X2_train = X2[validation_size:]
@@ -87,9 +87,9 @@ y_train = y[validation_size:N]
 y_val = y[:validation_size]
 
 # Define training constants
-lr = 8*1e-3
+lr = 8*1e-20
 epochs = 20
-bs = 50
+bs = 25
 sch = 0.985
 seed = 1
 torch.manual_seed(seed)
@@ -124,15 +124,21 @@ for epoch in range(epochs):
 
         # Forward pass
         y_pred = attack_model(x1, x2, m1, m2)
+        y_pred_copy = y_pred
+        y_pred_copy[y_pred_copy<0.0]=0.0
+        y_pred_copy[y_pred_copy>6.0]=6.0
 
         # Compute loss
         loss = -1*torch.sum(y_pred)
+        loss_copy = -1*torch.sum(y_pred_copy)
+
 
         # Zero gradients, backward pass, update weights
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        print("running avg: ", (-1*loss/bs))
+        print("running avg no bounding: ", (-1*loss/bs))
+        print("running avg bounded: ", (-1*loss_copy/bs))
 
         # Keep weights below barrier
         clip_params(attack_model, e)
