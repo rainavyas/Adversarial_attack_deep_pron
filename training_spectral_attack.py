@@ -124,7 +124,7 @@ for epoch in range(epochs):
 
         # Forward pass
         y_pred = attack_model(x1, x2, m1, m2)
-        y_pred_copy = y_pred
+        y_pred_copy = y_pred.clone()
         y_pred_copy[y_pred_copy<0.0]=0.0
         y_pred_copy[y_pred_copy>6.0]=6.0
 
