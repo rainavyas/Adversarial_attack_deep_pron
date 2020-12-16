@@ -16,10 +16,14 @@ def clip_params(model, barrier_val):
     for name, params in model.named_parameters():
         old_params[name] = params.clone()
 
+    old_params['noise_root'][old_params['noise_root']>math.log(barrier_val)] = math.log(barrier_val)
+    ''' 
     for i, param in enumerate(old_params['noise_root']):
+        
         if param > math.log(barrier_val):
             old_params['noise_root'][i] = math.log(barrier_val)
-
+    '''
+        
     for name, params in model.named_parameters():
         params.data.copy_(old_params[name])
 
@@ -93,7 +97,7 @@ spectral_dim = 24
 mfcc_dim = 13
 
 #init_root = torch.FloatTensor([5]*spectral_dim)
-init_root = torch.randn(spectral_dim)
+init_root = torch.randn(X1_train.size(2), spectral_dim)
 
 # Store all training dataset in a single wrapped tensor
 train_ds = TensorDataset(X1_train, X2_train, M1_train, M2_train)
@@ -105,7 +109,7 @@ train_dl = DataLoader(train_ds, batch_size = bs, shuffle = True)
 if checkpoint == None:
     attack_model = Spectral_attack(spectral_dim, mfcc_dim, model_path, init_root)
 else:
-    deep_model = torch.load(checkpoint)
+    attack_model = torch.load(checkpoint)
 
 print("Initialised model")
 
@@ -140,7 +144,7 @@ for epoch in range(epochs):
     y_val_pred[y_val_pred<0.0]=0.0
     avg = torch.sum(y_val_pred)/validation_size
     print("Validation Avg: ", avg)
-
+'''
     old_params = {}
     for name, params in attack_model.named_parameters():
         old_params[name] = params.clone()
@@ -148,6 +152,6 @@ for epoch in range(epochs):
     for i, param in enumerate(old_params['noise_root']):
         c = math.exp(param)
         print("Channel:", i, " ", c)
-
+'''
 # Save the trained model
 torch.save(attack_model, out_file)
