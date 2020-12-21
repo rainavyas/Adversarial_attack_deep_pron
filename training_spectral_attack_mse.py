@@ -87,7 +87,7 @@ y_train = y[validation_size:N]
 y_val = y[:validation_size]
 
 # Define training constants
-lr = 8*1e-2
+lr = 8*1e-0
 epochs = 20
 bs = 50
 sch = 0.985
@@ -97,7 +97,9 @@ spectral_dim = 24
 mfcc_dim = 13
 
 #init_root = torch.FloatTensor([5]*spectral_dim)
-init_root = torch.randn(X1_train.size(2), spectral_dim)
+#init_root = torch.randn(X1_train.size(2), spectral_dim)
+#init_root = torch.zeros(X1_train.size(2), spectral_dim) - 8
+init_root = torch.randn(spectral_dim)
 
 # Store all training dataset in a single wrapped tensor
 train_ds = TensorDataset(X1_train, X2_train, M1_train, M2_train)
