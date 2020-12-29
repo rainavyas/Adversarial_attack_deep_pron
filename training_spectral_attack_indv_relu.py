@@ -7,7 +7,7 @@ import sys
 import os
 import argparse
 from pkl2pqvects import get_vects, get_phones
-from model_spectral_attack import Spectral_attack
+from model_spectral_attack_indv import Spectral_attack
 import math
 import torch.nn.functional as Functional
 
@@ -51,7 +51,7 @@ checkpoint = args.checkpoint
 # Save the command run
 if not os.path.isdir('CMDs'):
     os.mkdir('CMDs')
-with open('CMDs/training_spectral_attack_relu.cmd', 'a') as f:
+with open('CMDs/training_spectral_attack_indv_relu.cmd', 'a') as f:
     f.write(' '.join(sys.argv)+'\n')
 
 pkl = pickle.load(open(pkl_file, "rb"))
@@ -75,7 +75,7 @@ y = torch.FloatTensor(y)
 
 
 # Split into training and validation sets
-validation_size = 50
+validation_size = 0
 X1_train = X1[validation_size:]
 X1_val = X1[:validation_size]
 X2_train = X2[validation_size:]
@@ -97,8 +97,8 @@ torch.manual_seed(seed)
 spectral_dim = 24
 mfcc_dim = 13
 
-init_root = torch.FloatTensor([-2]*spectral_dim)
-#init_root = torch.randn(X1_train.size(2), spectral_dim)
+init_root = torch.randn(bs, spectral_dim) # single frame attack
+#init_root = torch.zeros(bs, spectral_dim) -10 # temp to know no attack average
 
 # Store all training dataset in a single wrapped tensor
 train_ds = TensorDataset(X1_train, X2_train, M1_train, M2_train)
@@ -142,13 +142,6 @@ for epoch in range(epochs):
         # Keep weights below barrier
         clip_params(attack_model, e)
 
-    # Validation
-    attack_model.eval()
-    y_val_pred = attack_model(X1_val, X2_val, M1_val, M2_val)
-    y_val_pred[y_val_pred>6.0]=6.0
-    y_val_pred[y_val_pred<0.0]=0.0
-    avg = torch.sum(y_val_pred)/validation_size
-    print("Validation Avg: ", avg)
 
 # Save the trained model
 torch.save(attack_model, out_file)
